@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editable Title and Favicon</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link id="favicon" rel="icon" href="favicon.ico">
+  <style>
+    .editable {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="#">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Features</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Pricing</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#">Sign Out</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <h1 class="editable" id="pageTitle">Editable Page Title</h1>
+  <button id="publishButton" class="btn btn-primary mt-3">Publish</button>
+</div>
+
+<!-- Edit Title Modal -->
+<div class="modal fade" id="titleModal" tabindex="-1" role="dialog" aria-labelledby="titleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titleModalLabel">Edit Title and Favicon</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="titleInput">Enter New Title:</label>
+          <input type="text" class="form-control" id="titleInput">
+        </div>
+        <div class="form-group">
+          <label for="faviconInput">Upload Favicon:</label>
+          <input type="file" class="form-control-file" id="faviconInput" accept=".ico,.jpeg,.png">
+        </div>
+        <div class="form-group">
+          <img id="faviconPreview" src="" alt="Favicon Preview" style="display: none; width: 50px; height: 50px;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="saveTitleBtn">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="button.js"></script>
+<script>
+  $(document).ready(function() {
+    var currentTitleElement;
+
+    // Make title editable on double click
+    $('#pageTitle').dblclick(function() {
+      currentTitleElement = $(this);
+      $('#titleInput').val(currentTitleElement.text());
+      $('#titleModal').modal('show');
+    });
+
+    // Save new title and favicon
+    $('#saveTitleBtn').click(function() {
+      var newTitle = $('#titleInput').val();
+      currentTitleElement.text(newTitle);
+      document.title = newTitle;
+
+      var file = document.getElementById('faviconInput').files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var newFavicon = e.target.result;
+          $('#favicon').attr('href', newFavicon);
+          document.querySelector("link[rel~='icon']").href = newFavicon;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      $('#titleModal').modal('hide');
+    });
+
+    // Display favicon preview
+    $('#faviconInput').change(function(event) {
+      var file = event.target.files[0];
+      var imageType = /^image\/(ico|jpeg|png)$/;
+      if (file && imageType.test(file.type)) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          $('#faviconPreview').attr('src', e.target.result).show();
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert('Please upload a valid .ico, .jpeg, or .png file');
+        $('#faviconPreview').hide();
+      }
+    });
+  });
+</script>
+</body>
+</html>
